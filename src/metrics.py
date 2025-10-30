@@ -33,3 +33,9 @@ def total_units(df):
 def aov(df):
     return total_revenue(df) / (len(df) + 1)
 
+def aov_per_category(df):
+    df_grouped = df.groupby('category')[['units', 'revenue']].sum().reset_index()
+    df_grouped['aov'] = df_grouped['revenue'] / df_grouped['units']
+
+    return df_grouped[['category', 'aov']]
+
