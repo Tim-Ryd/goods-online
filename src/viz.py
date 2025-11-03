@@ -18,7 +18,6 @@ def top_3_category_by_revenue_graph(df):
     plt.ylabel('Revenue')
     plt.show()
 
-<<<<<<< HEAD
 
 
 def top_3_date_by_revenue_graph(df):
@@ -49,9 +48,6 @@ def month_by_month_revenue_graph(df):
     plt.grid()
     plt.show()
 
-    
-    
-=======
 def revenue_per_city(df):
     city_data = metrics.summary_city(df)
     plt.figure(figsize=(8,5))
@@ -61,5 +57,5 @@ def revenue_per_city(df):
     plt.ylabel("Total intäkt (kr)")
     plt.xticks(rotation=45)
     plt.tight_layout()
-    plt.show()
->>>>>>> main
+    plt.show()    
+    
