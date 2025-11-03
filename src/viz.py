@@ -1,6 +1,7 @@
 #viz.py = plot-funktioner
 
 import matplotlib.pyplot as plt
+import pandas as pd
 from . import metrics
 
 def top_3_category_by_revenue_graph(df):
@@ -36,17 +37,31 @@ def top_3_date_by_revenue_graph(df):
 
 
 def month_by_month_revenue_graph(df):
-    df['month'] = df['date'].str.slice(5,7).astype(int)
-    monthly_revenue = df.groupby('month')['revenue'].sum().reset_index().sort_values('month')
+    # Extrahera månad från datum
+    df['month'] = df['date'].dt.month
     
+    # Summera revenue per månad
+    monthly_revenue = (
+        df.groupby('month', as_index=False)['revenue']
+          .sum()
+          .sort_values('month')
+    )
+
+    # Rita linjediagram
     plt.figure(figsize=(10,5))
-    plt.plot(monthly_revenue['month'], monthly_revenue['revenue'], marker='o', color='#335BFF')
+    plt.plot(monthly_revenue['month'], monthly_revenue['revenue'],
+             marker='o', color='#335BFF')
     plt.title('Month by Month Revenue')
     plt.xlabel('Month')
     plt.ylabel('Revenue')
-    plt.xticks(range(1,7))
-    plt.grid()
+    plt.xticks(monthly_revenue['month'])  # dynamisk x-axel
+    plt.grid(True)
+    plt.tight_layout()
     plt.show()
+
+
+
+
 
 def revenue_per_city(df):
     city_data = metrics.summary_city(df)
