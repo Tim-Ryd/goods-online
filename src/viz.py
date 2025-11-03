@@ -22,16 +22,16 @@ def top_3_category_by_revenue_graph(df):
 
 def top_3_date_by_revenue_graph(df):
     # Get top 3 dates
-    top_3 = df.groupby('date')['revenue'].sum().reset_index()
+    top_3 = df.groupby('date', as_index=False)['revenue'].sum()
     top_3 = top_3.sort_values('revenue', ascending=False).head(3)
-    colors = ["#33FF70", "#E4FF33", "#FF5533"]  
-    
-    plt.figure(figsize=(5,5))
-    plt.bar(top_3['date'], top_3['revenue'], color=colors)
-    plt.title('Top 3 Dates by Revenue')
-    plt.xlabel('Date')
-    plt.ylabel('Revenue')
-    plt.show()    
+    colors = ['#FF5733', '#33C1FF', '#33FF57']  
+
+    plt.figure(figsize=(8,6))
+    plt.bar(top_3['date'].astype(str), top_3['revenue'], color=colors)
+    plt.title('Top 3 Dates by Revenue')     
+    plt.xlabel('date')
+    plt.ylabel('revenue')
+    plt.show()
 
 
 
