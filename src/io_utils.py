@@ -2,11 +2,7 @@
 
 import pandas as pd
 
-<<<<<<< HEAD
-def load_data(csv_file):
-    return pd.read_csv(csv_file)
     
-=======
 REQUIRED = [
     "order_id","date","city","category","price","units","revenue"
 ]
@@ -24,4 +20,3 @@ def load_data(path: str) -> pd.DataFrame:
         raise ValueError(f"Saknade kolumner: {missing}")
 
     return df
->>>>>>> main
