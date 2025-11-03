@@ -132,3 +132,11 @@ def top_3_date_by_revenue(
     return top_3
 
 
+def compute_revenue_by_city(df):
+    """
+    Beräknar total intäkt per stad.
+    Returnerar en DataFrame sorterad från högst till lägst.
+    """
+    revenue = df.groupby('city')['revenue'].sum().reset_index()
+    revenue = revenue.sort_values(by='revenue', ascending=False)
+    return revenue
