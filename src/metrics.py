@@ -1,5 +1,5 @@
 #metrics.py = nyckeltals-funktioner
-
+import pandas as pd
 def top_3_category_by_revenue(df):
     """
     Ger tillbaka en DataFrame innehållande top 3 kategorier utifrån intäkt. Sorterade från högst till lägst.
@@ -54,15 +54,39 @@ def aov(df):
     """
     return total_revenue(df) / (len(df) + 1)
 
-def aov_per_category(df):
+def aup_per_category(df):
     """
-    Ger tillbaka en DataFrame innehållande average order value (aov) per kategori. Sorterad högst till lägst.
+    Ger tillbaka en DataFrame innehållande average unit price samt std per kategori. Sorterad högst till lägst.
     """
     df_grouped = df.groupby('category')[['units', 'revenue']].sum().reset_index()
-    df_grouped['aov'] = (df_grouped['revenue'] / df_grouped['units'])
-    df_grouped = df_grouped.sort_values('aov', ascending=False).reset_index(drop=True)
+    df_grouped['aup'] = (df_grouped['revenue'] / df_grouped['units'])
+    df_grouped = df_grouped.sort_values('aup', ascending=False).reset_index(drop=True)
 
-    return df_grouped[['category', 'aov']]
+    order_unit_price = df.copy()
+    order_unit_price['unit_price'] = order_unit_price['revenue'] / order_unit_price['units']
+    
+    # Beräkna std per kategori
+    std_df = order_unit_price.groupby('category')['unit_price'].std().reset_index().rename(columns={'unit_price': 'std'})
+
+    # Slå ihop aup och std
+    df_grouped = df_grouped.merge(std_df, on='category')
+
+    return df_grouped[['category', 'aup', 'std']]
+
+
+def category_aov_std(df):
+    """
+    Beräknar AOV och standardavvikelse per kategori.
+
+    Returnerar: DataFrame med kolumner ['category','aov','std']
+    """
+    # Grupperar data per kategori och beräkna medelvärde och standardavvikelse på 'revenue'
+    result = df.groupby('category')['revenue'].agg(aov='mean', std='std', median='median').reset_index()
+    
+    result = result.sort_values(by='aov', ascending=False).reset_index(drop=True)
+                                                                       
+    return result
+
 
 def summary_city(df):
     # Gruppindelning: räkna ihop intäkt, antal produkter och ordrar per stad
@@ -77,8 +101,6 @@ def summary_city(df):
 
     # Visa resultatet
     return city_data
-
-import pandas as pd
 
 def revenue_by_category(df: pd.DataFrame) -> dict:
     """
@@ -104,7 +126,7 @@ def top_3_category_by_revenue(df: pd.DataFrame) -> pd.DataFrame:
     return top_3
 
 
-def top_3_date_by_revenue(
+def top_3_date_by_revenue_v2(
     df: pd.DataFrame,
     date_col: str = "date",
     price_col: str = "price",
@@ -140,3 +162,15 @@ def compute_revenue_by_city(df):
     revenue = df.groupby('city')['revenue'].sum().reset_index()
     revenue = revenue.sort_values(by='revenue', ascending=False)
     return revenue
+
+def orders_per_category(df):
+    """
+    Räknar antal ordrar per kategori.
+
+    """
+    # Grupperar efter kategori och räkna antal unika order_id
+    result = df.groupby('category')['order_id'].count().reset_index(name='num_orders')
+    
+    result = result.sort_values(by='num_orders', ascending=False).reset_index(drop=True)
+    
+    return result
