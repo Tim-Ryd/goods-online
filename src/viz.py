@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from . import metrics
 
-def top_3_category_by_revenue_graph(df):
+def top_3_category_by_revenue_graph(df: pd.DataFrame):
     """
     Ger tillbaka ett stapeldiagram som visualiserar top 3 kategorier utifrån intäkt.
     """
@@ -19,7 +19,7 @@ def top_3_category_by_revenue_graph(df):
     plt.ylabel('Revenue')
     plt.show()
 
-def category_by_revenue_graph(df):
+def category_by_revenue_graph(df: pd.DataFrame):
     """
     Ger tillbaka ett stapeldiagram som visualiserar  kategorier utifrån intäkt.
     """
@@ -35,9 +35,9 @@ def category_by_revenue_graph(df):
     plt.ylabel('Revenue')
     plt.show()
 
-def bar_graph(df,x:str,y:str,title:str, xlabel:str, ylabel:str):
+def bar_graph(df: pd.DataFrame,x:str,y:str,title:str, xlabel:str, ylabel:str):
     """
-    Ger tillbaka ett stapeldiagram som visualiserar x utifrån y.
+    Skapar och visar ett stapeldiagram som visualiserar den totala summan av y för varje kategori i x.
     """
     category_df = df.groupby(x)[y].sum().reset_index().sort_values(y, ascending=False)
 
@@ -53,7 +53,11 @@ def bar_graph(df,x:str,y:str,title:str, xlabel:str, ylabel:str):
 
 
 
-def top_3_date_by_revenue_graph(df):
+def top_3_date_by_revenue_graph(df: pd.DataFrame):
+    """
+    Skapar och visar ett stapeldiagram som visualiserar de top 3 bästa försäljningsdatumen.
+    
+    """
     # Get top 3 dates
     top_3 = df.groupby('date', as_index=False)['revenue'].sum()
     top_3 = top_3.sort_values('revenue', ascending=False).head(3)
@@ -68,7 +72,14 @@ def top_3_date_by_revenue_graph(df):
 
 
 
-def month_by_month_revenue_graph(df):
+def month_by_month_revenue_graph(df: pd.DataFrame):
+    """
+
+    Skapar och visar ett linjediagram som illustrerar intäkt per månad.
+    
+    """
+
+
     # Extrahera månad från datum
     df['month'] = df['date'].dt.month
     
@@ -92,10 +103,12 @@ def month_by_month_revenue_graph(df):
     plt.show()
 
 
-def revenue_by_category(df):
-    # Säkerställ att 'date' är datetime
-    df['date'] = pd.to_datetime(df['date'])
+def revenue_by_category(df: pd.DataFrame):
+    """
+    Skapar och visar ett linjediagram som visualiserar månatlig omsättning per kategori.
     
+    """
+
     # Extrahera månad
     df['month'] = df['date'].dt.month
     
@@ -105,27 +118,29 @@ def revenue_by_category(df):
           .sum()
           .sort_values(['category','month'])
     )
-    
+    #Unika kategorier
     categories = monthly_category_revenue['category'].unique()
     
     plt.figure(figsize=(5,5))
-    
+    # Rita respektive linje för kategorierna
     for cat in categories:
         cat_data = monthly_category_revenue[monthly_category_revenue['category'] == cat]
-        # Månader som faktiskt finns data för
-        months = cat_data['month']
-        month_names = [pd.Timestamp(2025, m, 1).strftime('%b') for m in months]
-        plt.plot(months, cat_data['revenue'], marker='o', label=cat)
-    
+        plt.plot(
+            cat_data['month'],
+            cat_data['revenue'],
+            marker='o',
+            label=cat
+        )
+    # Namnge labels, titlar...
     plt.title('Month by Month Revenue per Category')
     plt.xlabel('Month')
     plt.ylabel('Revenue')
     plt.grid(True)
     plt.legend(title='Category')
-    
-    all_months = sorted(monthly_category_revenue['month'].unique())
-    all_month_names = [pd.Timestamp(2025, m, 1).strftime('%b') for m in all_months]
-    plt.xticks(all_months, all_month_names)
+    # Sortera månaderna så de är i ordning samt namnge dem istället för siffor.
+    months = sorted(monthly_category_revenue['month'].unique())
+    month_names = [pd.Timestamp(2025, m, 1).strftime('%b') for m in months]
+    plt.xticks(months, month_names)
     
     plt.tight_layout()
     plt.show()
@@ -134,7 +149,11 @@ def revenue_by_category(df):
 
 
 
-def revenue_per_city(df):
+def revenue_per_city(df: pd.DataFrame):
+    """
+    Skapar och visualiserar ett stapeldiagram som visar intäkt per stad.
+    
+    """
     city_data = metrics.summary_city(df)
     plt.figure(figsize=(8,5))
     plt.bar(city_data["city"], city_data["total_revenue"], color="pink")
